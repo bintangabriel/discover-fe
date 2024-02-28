@@ -14,7 +14,7 @@ export default function Navbar() {
             /> */}
           </Link>
         </div>
-        <p className='text-gray-300 text-5xl font-medium'>
+        <p className='text-gray-300 text-5xl font-medium p-3'>
           Discover <span className='font-bold text-red-300'>More</span>
         </p>
       </div>

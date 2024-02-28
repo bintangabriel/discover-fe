@@ -1,8 +1,8 @@
 "use client"
 import Card from "@/src/components/Card";
 import { getDateList } from "@/src/components/DateUtils";
-import { redirectTo } from "@/src/hooks/useHandleNavigation";
-import { getLastDate, setLastDate } from "@/src/hooks/useLastDate";
+import { redirectTo } from "@/src/utils/useHandleNavigation";
+import { getLastDate, setLastDate } from "@/src/utils/useLastDate";
 import { da } from "date-fns/locale";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
@@ -39,21 +39,23 @@ export default function Home() {
 
   useEffect(() => {
     const fetchInitData = async () => {
+      setLastDate((Number(format(new Date(), 'yyyyMMdd')) - 1).toString())
       const data = await fetchNewsData(getLastDate());
       setLastDate((Number(getLastDate())-1).toString());
       setNewsArray(data.news);
       flag = true;
       setIsLoading(false);
+      console.log("haiii")
     }
     fetchInitData();
   }, [])
 
 
-  return (
+  return (  
     <div>
       <Navbar />
       <div className="flex justify-center">
-        <div className="flex-row justify-center gap-5 w-4/5 mt-12 flex-row-1">
+        <div className="flex-row justify-center w-4/5 mt-24 flex-row-1">
           {
             newsArray.map((news:any, index:any) => (
               <React.Fragment key={index}>
@@ -64,7 +66,6 @@ export default function Home() {
                     url={news.image_url}
                     content={news.content}
                   />
-
                   </div>
                 </Link>
               </React.Fragment>

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import React from 'react'
+import { limitText } from '../utils/limitText';
 
 declare global{
     interface SourcesProps {
@@ -12,10 +13,10 @@ declare global{
 const SourcesBox = (props: SourcesProps) => {
     let urlObject = new URL(props.url);
   return (
-    <Link href={urlObject}>
-        <div className='bg-slate-400 rounded-md p-2'>
+    <Link href={urlObject} target='blank'>
+        <div className='transition duration-300 shadow-md hover:shadow-2xl rounded-md p-2 bg-gray-100'>
             <p className='text-lg font-semibold'>
-                {props.title}
+                {limitText(props.title, 10)}
             </p>
             <p>
                 {props.name}

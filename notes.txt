@@ -1,23 +1,35 @@
+GET News for a day
+
+request : GET (date) PATH = "/discover/{date}" date = yyyymmdd
+response : {
+    "day":
+    [
+        {
+            "title" : "this is title",
+            "content" : "",
+            "imageUrl" : "adads",
+        },
+        {
+            ...
+        }
+    ]
+}   
+
+
+
 "use client"
 import Card from "@/src/components/Card";
 import { getDateList } from "@/src/components/DateUtils";
 import { redirectTo } from "@/src/hooks/useHandleNavigation";
 import { getLastDate, setLastDate } from "@/src/hooks/useLastDate";
-import { da } from "date-fns/locale";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { format } from "date-fns";
-import Navbar from "@/src/components/Navbar";
 
-let flag = false;
 
 async function fetchNewsData(date:string){
   try {
-    const res = await fetch(`https://discover-nine-mocha.vercel.app/discover/${date}`, {cache: 'no-store'});
-    if (flag){
-      setLastDate((Number(getLastDate())-1).toString());
-    }
-    console.log(`Last date ${getLastDate()}`);
+    const res = await fetch(`http://localhost:8000/discover/${date}`, {cache: 'no-store'});
+    setLastDate();
     return res.json()
   } catch (error) {
     console.error('Error fetching the data: ', error)
@@ -26,54 +38,56 @@ async function fetchNewsData(date:string){
 }
 
 export default function Home() {
-  
-  const [newsArray, setNewsArray] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  
-  const loadMoreData = async () => {
-    setIsLoading(true);
-    const dt = await fetchNewsData(getLastDate());
-    setNewsArray(prevArray => [...prevArray, ...dt.news])
-    setIsLoading(false);
-  }
+
+  const [storage, setStorage] = useState();
 
   useEffect(() => {
-    const fetchInitData = async () => {
+    const fetchInitial = async () => {
       const data = await fetchNewsData(getLastDate());
-      setLastDate((Number(getLastDate())-1).toString());
-      setNewsArray(data.news);
-      flag = true;
-      setIsLoading(false);
+      const newsArray = data.news;
+      setStorage(newsArray);
+      console.log(storage)
     }
-    fetchInitData();
-  }, [])
+  })
 
+  const handleClick: React.MouseEventHandler<HTMLButtonElement> = async (event) => {
+    event.preventDefault();
+
+    try {
+      const data = await fetchNewsData(getLastDate());
+      const newsArray = data.news;
+      setStorage(newsArray);
+    } catch (error) {
+      console.error('error : ', error);
+    }
+  }
+
+
+  const HandleClick = (path:string) => {
+    redirectTo(path)
+  }
 
   return (
     <div>
-      <Navbar />
       <div className="flex justify-center">
-        <div className="flex-row justify-center gap-5 w-4/5 mt-12 flex-row-1">
+        <div className="flex-row justify-center gap-4 w-4/5">
           {
-            newsArray.map((news:any, index:any) => (
+            storage.map((news:any, index:any) => (
               <React.Fragment key={index}>
                 <Link href={`/answer/${news.title}`} className="w-4/5">
-                  <div className="flex-grow"> 
                   <Card
                   title={news.title}
                     url={news.image_url}
                     content={news.content}
                   />
-
-                  </div>
                 </Link>
               </React.Fragment>
             ))
           }
           <div className="flex justify-center my-5">
           <button className="px-4 py-2 bg-blue-500 text-white font-semibold rounded-md shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-          onClick={loadMoreData}>
-            {isLoading ? 'Loading...'  : 'Load More' }</button>
+          onClick={handleClick}>
+            Load More</button>
           </div>
         </div>
       </div>   

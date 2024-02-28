@@ -57,7 +57,7 @@ export default function Home() {
           {
             newsArray.map((news:any, index:any) => (
               <React.Fragment key={index}>
-                <Link href={`/answer/${news.title}`} className="w-4/5">
+                <Link href={`/answer/${news.slug}`} className="w-4/5">
                   <div className="flex-grow"> 
                   <Card
                   title={news.title}
